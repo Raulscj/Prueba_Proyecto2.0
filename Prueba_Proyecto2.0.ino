@@ -2,22 +2,9 @@
 #include <ThingSpeak.h>
 #include <max6675.h>
 #include <WebServer.h>
+#include "config.h"
+#include "data.h"
 
-// Conexiones
-const char *ssid = "radscj";
-const char *password = "26962904";
-unsigned long channelID = 2308886;
-const char *writeAPIKey = "UQ571C2UZVDM7JGH";
-WiFiClient client;
-MAX6675 thermocouple(12, 14, 27);
-WebServer server(80);
-
-// Variables globales
-unsigned long tiempoInicio;
-const char *titleTemp = "Temp: ";
-const char *titleTime = "TimeT: ";
-float tempC; // Definimos las variables globales aquí
-float timeT;
 
 void setup()
 {
