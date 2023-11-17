@@ -1,12 +1,8 @@
 // Variables globales
-unsigned long tiempoInicio;
-const char *titleTemp = "Temp: ";
-const char *titleTime = "TimeT: ";
+int tiempoTotal = 0;   
+int tiempoRestante = 0; 
+float temperaturaMaxima = 30; 
+float temperaturaMinima = 25; 
 float tempC; // Definimos las variables globales aquí
-float timeT;
-/*const String Pagina =  R"====(HTTP/1.1 200 OK
-Content-Type: text/html
-
-<!DOCTYPE HTML>
-<html>
-)====";*/
+/*const char *titleTemp = "Temp: ";
+const char *titleTime = "TimeT: ";*/
