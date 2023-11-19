@@ -94,7 +94,6 @@ void loop()
     ThingSpeak.setField(3, tiempoRestante);
     ThingSpeak.writeFields(channelID, writeAPIKey);
     tiempoRestante --;
-    server.handleClient();
   }
   else
   {
@@ -109,5 +108,15 @@ void getTemp()
 }
 void alarm()
 {
-  digitalWrite(5, HIGH);
+  static unsigned long startTime = 0;
+  unsigned long currentTime = millis();
+   if (currentTime - startTime < 2500){
+    if(digitalRead(5)==LOW){
+      digitalWrite(5, HIGH);
+    }
+   } else{
+    digitalWrite(5, LOW);
+    startTime = currentTime;
+   }
+  
 }
