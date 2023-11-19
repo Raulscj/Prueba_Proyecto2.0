@@ -41,24 +41,49 @@ void setup()
   oled.display();*/
   delay(1000);
 
-  server.on("/", HTTP_GET, []()
-            {
+server.on("/", HTTP_GET, []() {
     String html = "<html><body>";
     html += "<h1>Tostadora de Maíz</h1>";
-    html += "<p>Tiempo Total: " + String(tiempoTotal) + " segundos</p>";
-    html += "<p>Tiempo Restante: " + String(tiempoRestante) + " segundos</p>";
-    html += "<p>Temperatura: " + String(tempC) + " °C</p>";
-    html += "<form action='/setTiempo' method='post'>";
+    html += "<p id='totalTime'>Tiempo Total: </p>";
+    html += "<p id='remainingTime'>Tiempo Restante: </p>";
+    html += "<p id='temperature'>Temperatura: </p>";
+    html += "<form id='timeForm' action='/setTiempo' method='post'>";
     html += "Nuevo Tiempo: <input type='text' name='tiempo'><input type='submit' value='Actualizar'>";
-    html += "</form></body></html>";
-    server.send(200, "text/html", html); });
-  server.on("/setTiempo", HTTP_POST, []()
-            {
+    html += "</form>";
+    html += "<script>";
+    html += "function updateData() {";
+    html += "var xhr = new XMLHttpRequest();";
+    html += "xhr.onreadystatechange = function() {";
+    html += "if (xhr.readyState == 4 && xhr.status == 200) {";
+    html += "var data = JSON.parse(xhr.responseText);";
+    html += "document.getElementById('totalTime').innerHTML = 'Tiempo Total: ' + data.totalTime + ' segundos';";
+    html += "document.getElementById('remainingTime').innerHTML = 'Tiempo Restante: ' + data.remainingTime + ' segundos';";
+    html += "document.getElementById('temperature').innerHTML = 'Temperatura: ' + data.temperature + ' °C';";
+    html += "}";
+    html += "};";
+    html += "xhr.open('GET', '/data', true);";
+    html += "xhr.send();";
+    html += "}";
+    html += "setInterval(updateData, 1000);"; // Actualiza cada segundo
+    html += "</script></body></html>";
+
+    server.send(200, "text/html", html);
+  });
+
+  server.on("/data", HTTP_GET, []() {
+    String jsonResponse = "{\"totalTime\":" + String(tiempoTotal) +
+                          ", \"remainingTime\":" + String(tiempoRestante) +
+                          ", \"temperature\":" + String(tempC) + "}";
+    server.send(200, "application/json", jsonResponse);
+  });
+
+  server.on("/setTiempo", HTTP_POST, []() {
     String nuevoTiempo = server.arg("tiempo");
     tiempoTotal = nuevoTiempo.toInt();
     tiempoRestante = tiempoTotal;
     server.sendHeader("Location", "/");
-    server.send(302); });
+    server.send(302, "text/plain", "Redirecting");
+  });
 
   server.begin();
   Serial.println("Servidor HTTP iniciado");
