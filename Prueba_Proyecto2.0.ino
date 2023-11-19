@@ -7,6 +7,7 @@
 #include <Adafruit_SSD1306.h>*/
 #include "config.h"
 #include "data.h"
+#include "controllers.h"
 
 void setup()
 {
@@ -96,6 +97,8 @@ void loop()
   {
     
     Serial.println("SYSTEMS ON");
+    digitalWrite(15, HIGH);
+    Serial.println("Encendiendo motor");
     getTemp();
     Serial.println("Temperatura:");
     /*oled.clearDisplay();
@@ -123,25 +126,13 @@ void loop()
   else
   {
     Serial.println("SYSTEM OFF");
+    if(digitalRead(15)==HIGH){
+      Serial.println("Apagando motor");
+      digitalWrite(15, LOW);
+      alarm();
+    }
   }
   delay(300);
 }
-void getTemp()
-{
-  tempC = thermocouple.readCelsius();
-  ThingSpeak.setField(1, tempC);
-}
-void alarm()
-{
-  static unsigned long startTime = 0;
-  unsigned long currentTime = millis();
-   if (currentTime - startTime < 2500){
-    if(digitalRead(5)==LOW){
-      digitalWrite(5, HIGH);
-    }
-   } else{
-    digitalWrite(5, LOW);
-    startTime = currentTime;
-   }
-  
-}
+
+
