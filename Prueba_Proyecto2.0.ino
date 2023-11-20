@@ -15,6 +15,7 @@ void setup()
   pinMode(5, OUTPUT);       // Buzzer
   pinMode(4, OUTPUT);       // Bombillo
   pinMode(15, OUTPUT);      // Motor
+  pinMode(13, INPUT);       // Sensor de llama
 
   Serial.begin(115200);
   /*Wire.begin();
@@ -42,7 +43,8 @@ void setup()
   oled.display();*/
   delay(1000);
 
-server.on("/", HTTP_GET, []() {
+  server.on("/", HTTP_GET, []()
+            {
     String html = "<html><body>";
     html += "<h1>Tostadora de Maíz</h1>";
     html += "<p id='totalTime'>Tiempo Total: </p>";
@@ -68,23 +70,22 @@ server.on("/", HTTP_GET, []() {
     html += "setInterval(updateData, 1000);"; // Actualiza cada segundo
     html += "</script></body></html>";
 
-    server.send(200, "text/html", html);
-  });
+    server.send(200, "text/html", html); });
 
-  server.on("/data", HTTP_GET, []() {
+  server.on("/data", HTTP_GET, []()
+            {
     String jsonResponse = "{\"totalTime\":" + String(tiempoTotal) +
                           ", \"remainingTime\":" + String(tiempoRestante) +
                           ", \"temperature\":" + String(tempC) + "}";
-    server.send(200, "application/json", jsonResponse);
-  });
+    server.send(200, "application/json", jsonResponse); });
 
-  server.on("/setTiempo", HTTP_POST, []() {
+  server.on("/setTiempo", HTTP_POST, []()
+            {
     String nuevoTiempo = server.arg("tiempo");
     tiempoTotal = nuevoTiempo.toInt();
     tiempoRestante = tiempoTotal;
     server.sendHeader("Location", "/");
-    server.send(302, "text/plain", "Redirecting");
-  });
+    server.send(302, "text/plain", "Redirecting"); });
 
   server.begin();
   Serial.println("Servidor HTTP iniciado");
@@ -95,10 +96,13 @@ void loop()
   server.handleClient();
   if (digitalRead(2) == HIGH && tiempoRestante > 0)
   {
-    
     Serial.println("SYSTEMS ON");
     digitalWrite(15, HIGH);
     Serial.println("Encendiendo motor");
+    fire();
+    Serial.println("Encendiendo Gas");
+    flaming();
+
     getTemp();
     Serial.println("Temperatura:");
     /*oled.clearDisplay();
@@ -121,12 +125,13 @@ void loop()
     oled.display();*/
     ThingSpeak.setField(3, tiempoRestante);
     ThingSpeak.writeFields(channelID, writeAPIKey);
-    tiempoRestante --;
+    tiempoRestante--;
   }
   else
   {
     Serial.println("SYSTEM OFF");
-    if(digitalRead(15)==HIGH){
+    if (digitalRead(15) == HIGH)
+    {
       Serial.println("Apagando motor");
       digitalWrite(15, LOW);
       alarm();
@@ -134,5 +139,3 @@ void loop()
   }
   delay(300);
 }
-
-
