@@ -16,6 +16,8 @@ void setup()
   pinMode(4, OUTPUT);       // Bombillo
   pinMode(15, OUTPUT);      // Motor
   pinMode(13, INPUT);       // Sensor de llama
+  pinMode(18, OUTPUT); //Trigger
+  pinMode(19, INPUT); //ECO
 
   Serial.begin(115200);
   /*Wire.begin();
@@ -101,8 +103,6 @@ void loop()
     Serial.println("Encendiendo motor");
     fire();
     Serial.println("Encendiendo Gas");
-    flaming();
-
     getTemp();
     Serial.println("Temperatura:");
     /*oled.clearDisplay();

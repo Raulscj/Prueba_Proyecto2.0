@@ -23,33 +23,34 @@ void alarm()
 }
 void fire()
 {
-  // Cuando enciende
-  if (tempC < temperaturaMaxima && tempC < temperaturaMinima)
+  if (tempC < temperaturaMinima)
   {
     Serial.println("Encendiendo flautas");
     digitalWrite(4, HIGH);
     return;
   }
-  // Cuando apaga
-  else
-  {
+  // Cuando se apaga
+  else if(tempC> temperaturaMaxima || digitalRead(13) == LOW || !act){
     Serial.println("Apagando flautas");
     digitalWrite(4, LOW);
     alarm();
   }
 }
-
-void flaming()
-{
-  if (digitalRead(13) == LOW)
-  {
-    digitalWrite(4, LOW);
-    alarm();
-    Serial.println("FUGA DE GAS DETECTADA");
+void move(){
+  digitalWrite(18, HIGH);
+  delay(1);
+  digitalWrite(18, LOW);
+  DURACION = pulseIn(19, HIGH);
+  DISTANCIA = DURACION / 18.7;
+  delay(500);
+  if (DISTANCIA <= 200 && DISTANCIA >= 20) {
+    Serial.println("Objeto detectado");
+    act= true;
     return;
   }
-  else
-  {
-    Serial.println("Todo ok");
+  else{
+    Serial.println("Objeto no detectado");
+    act= false;
+    return;
   }
 }
