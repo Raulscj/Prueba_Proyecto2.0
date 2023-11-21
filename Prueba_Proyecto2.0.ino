@@ -31,17 +31,17 @@ void setup()
   server.on("/", HTTP_GET, []()
             {
     String html = "<html><head>";
-    html += "<title>Tostadora de Maíz</title>";
+    html += "<title>Tostadora de Maiz</title>";
     html += "<style>";
     html += "body {";
-    html += "    background-color: gray;"; 
+    html += "    background-color: white;"; 
     html += "    text-align: center;"; 
     html += "}";
     html += "h1 {";
     html += "    color: #FFD700;"; 
     html += "}";
     html += "p {";
-    html += "    color: #FFD700;"; 
+    html += "    color: RED;"; 
     html += "    font-size: 18px;";
     html += "}";
     html += ".red-text {";
@@ -136,7 +136,7 @@ void loop()
   {
     Serial.println("SYSTEM OFF");
     sistema = "off";
-    if (digitalRead(15) == HIGH || tiempoRestante == 0)
+    if (digitalRead(15) == HIGH)
     {
       Serial.println("Apagando motor");
       motor = "off";

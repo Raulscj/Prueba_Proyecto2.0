@@ -30,7 +30,6 @@ void fire()
     digitalWrite(4, LOW);
     flauta = "off";
     alarm();
-    return;
   }
   // Cuando enciende
   if (tempC < temperaturaMinima)
