@@ -30,36 +30,25 @@ void setup()
 
   server.on("/", HTTP_GET, []()
             {
-    String html = "<html><head>";
-    html += "<title>Tostadora de Maiz</title>";
-    html += "<style>";
-    html += "body {";
-    html += "    background-color: white;"; 
-    html += "    text-align: center;"; 
-    html += "}";
-    html += "h1 {";
-    html += "    color: #FFD700;"; 
-    html += "}";
-    html += "p {";
-    html += "    color: RED;"; 
-    html += "    font-size: 18px;";
-    html += "}";
-    html += ".red-text {";
-    html += "    color: red;"; 
-    html += "}";
-    html += "</style>";
-    html += "</head><body>";
-    html += "<h1>Tostadora de Maíz</h1>";
-    html += "<p id='totalTime' class='red-text'>Tiempo Total: </p>";
-    html += "<p id='remainingTime' class='red-text'>Tiempo Restante: </p>";
-    html += "<p id='temperature' class='red-text'>Temperatura: </p>";
-    html += "<p id='motor' class='red-text'>Estado del motor: </p>";
-    html += "<p id='flautas' class='red-text'>Estado de las flautas: </p>";
-    html += "<p id='system' class='red-text'>Estado del sistema: </p>";
+    String html = "<html><head><style>";
+    html += "body { background-color: #282c36; color: #dddddd; text-align: center; }";
+    html += "h1 { color: #61dafb; }";
+    html += "p { color: #ffee00; }";
+    html += "form { display: inline-block; }";
+    html += "</style></head><body>";
+    html += "<h1>Sistema automatizado</h1>";
+    html += "<p id='totalTime'>Tiempo Total: </p>";
+    html += "<p id='remainingTime'>Tiempo Restante: </p>";
+    html += "<p id='temperature'>Temperatura: </p>";
+    html += "<p id='motor'>Estado del motor: </p>";
+    html += "<p id='flauta'>Estado de las flautas: </p>";
+    html += "<p id='sistema'>Estado del sistema: </p>";
+    html += "<p id='tempMax'>Temperatura Máxima: </p>";
+    html += "<p id='tempMin'>Temperatura Mínima: </p>";
     html += "<form id='timeForm' action='/setTiempo' method='post'>";
     html += "Nuevo Tiempo: <input type='text' name='tiempo'><input type='submit' value='Actualizar'>";
-    html += "Temperatura maxima: <input type='number' name='tempmax'><input type='submit' value='Actualizar'>";
-    html += "Temperatura minima: <input type='number' name='tempmin'><input type='submit' value='Actualizar'>";
+    html += "Temperatura Máxima: <input type='number' name='tempMax'><input type='submit' value='Actualizar'>";
+    html += "Temperatura Mínima: <input type='number' name='tempMin'><input type='submit' value='Actualizar'>";
     html += "</form>";
     html += "<script>";
     html += "function updateData() {";
@@ -70,9 +59,11 @@ void setup()
     html += "document.getElementById('totalTime').innerHTML = 'Tiempo Total: ' + data.totalTime + ' segundos';";
     html += "document.getElementById('remainingTime').innerHTML = 'Tiempo Restante: ' + data.remainingTime + ' segundos';";
     html += "document.getElementById('temperature').innerHTML = 'Temperatura: ' + data.temperature + ' °C';";
-    html += "document.getElementById('motor').innerHTML = 'Tiempo Total: ' + data.motor;";
-    html += "document.getElementById('flautas').innerHTML = 'Tiempo Total: ' + data.flautas;";
-    html += "document.getElementById('system').innerHTML = 'Tiempo Total: ' + data.system;";
+    html += "document.getElementById('motor').innerHTML = 'Estado del motor: ' + data.motor;";
+    html += "document.getElementById('flauta').innerHTML = 'Estado de las flautas: ' + data.flauta;";
+    html += "document.getElementById('sistema').innerHTML = 'Estado del sistema: ' + data.sistema;";
+    html += "document.getElementById('tempMax').innerHTML = 'Temperatura Máxima: ' + data.tempMax + ' °C';";
+    html += "document.getElementById('tempMin').innerHTML = 'Temperatura Mínima: ' + data.tempMin + ' °C';";
     html += "}";
     html += "};";
     html += "xhr.open('GET', '/data', true);";
@@ -87,10 +78,12 @@ void setup()
             {
     String jsonResponse = "{\"totalTime\":" + String(tiempoTotal) +
                           ", \"remainingTime\":" + String(tiempoRestante) +
-                          ", \"temperature\":" + String(tempC) + 
-                          ",\"motor\":" + String(motor) +
-                          ",\"flautas\":" + String(flauta) +
-                          ",\"system\":" + String(sistema) +
+                          ", \"temperature\":" + String(tempC) +
+                          ", \"motor\":\"" + motor + "\"" +
+                          ", \"flauta\":\"" + flauta + "\"" +
+                          ", \"sistema\":\"" + sistema + "\"" +
+                          ", \"tempMax\":" + String(temperaturaMaxima) +
+                          ", \"tempMin\":" + String(temperaturaMinima) +
                           "}";
     server.send(200, "application/json", jsonResponse); });
 
@@ -99,11 +92,10 @@ void setup()
     String nuevoTiempo = server.arg("tiempo");
     tiempoTotal = nuevoTiempo.toInt();
     tiempoRestante = tiempoTotal;
-    String newtemperaturaMaxima = server.arg("tempmax");
-    temperaturaMaxima = newtemperaturaMaxima.toInt();
-    String newtemperaturaMinima = server.arg("tempmin");
-    tiempoTotal = nuevoTiempo.toInt();
-    temperaturaMinima = newtemperaturaMinima.toInt();
+    String newtemperaturaMaxima = server.arg("tempMax");
+    temperaturaMaxima = newtemperaturaMaxima.toFloat();
+    String newtemperaturaMinima = server.arg("tempMin");
+    temperaturaMinima = newtemperaturaMinima.toFloat();
     server.sendHeader("Location", "/");
     server.send(302, "text/plain", "Redirecting"); });
 
