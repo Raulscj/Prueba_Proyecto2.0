@@ -7,6 +7,7 @@ float tempC;
 int DURACION;
 int DISTANCIA;
 bool act = false;
+char *motor = "off";
+char *flauta = "off";
+char *sistema = "off";
 // Definimos las variables globales aquí
-/*const char *titleTemp = "Temp: ";
-const char *titleTime = "TimeT: ";*/

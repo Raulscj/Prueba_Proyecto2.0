@@ -2,9 +2,6 @@
 #include <ThingSpeak.h>
 #include <max6675.h>
 #include <WebServer.h>
-/*#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>*/
 #include "config.h"
 #include "data.h"
 #include "controllers.h"
@@ -16,33 +13,19 @@ void setup()
   pinMode(4, OUTPUT);       // Bombillo
   pinMode(15, OUTPUT);      // Motor
   pinMode(13, INPUT);       // Sensor de llama
-  pinMode(18, OUTPUT); //Trigger
-  pinMode(19, INPUT); //ECO
+  pinMode(18, OUTPUT);      // Trigger
+  pinMode(19, INPUT);       // ECO
 
   Serial.begin(115200);
-  /*Wire.begin();
-  oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);*/
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
     Serial.println("Conectando...");
-    /*oled.clearDisplay();
-    oled.setTextColor(WHITE);
-    oled.setCursor(0, 0);
-    oled.setTextSize(1);
-    oled.print("Conectando...");
-    oled.display();*/
   }
   Serial.println("Conexión exitosa");
   ThingSpeak.begin(client);
   Serial.println(WiFi.localIP());
-  /*oled.clearDisplay();
-  oled.setTextColor(WHITE);
-  oled.setCursor(0, 0);
-  oled.setTextSize(1);
-  oled.print(WiFi.localIP());
-  oled.display();*/
   delay(1000);
 
   server.on("/", HTTP_GET, []()
@@ -52,8 +35,13 @@ void setup()
     html += "<p id='totalTime'>Tiempo Total: </p>";
     html += "<p id='remainingTime'>Tiempo Restante: </p>";
     html += "<p id='temperature'>Temperatura: </p>";
+    html += "<p id='motor'>Estado del motor: </p>";
+    html += "<p id='flautas'>Estado de las flautas: </p>";
+    html += "<p id='system'>Estado del sistema: </p>";
     html += "<form id='timeForm' action='/setTiempo' method='post'>";
     html += "Nuevo Tiempo: <input type='text' name='tiempo'><input type='submit' value='Actualizar'>";
+    html += "Temperatura maxima: <input type='number' name='tempmax'><input type='submit' value='Actualizar'>";
+    html += "Temperatura minima: <input type='number' name='tempmin'><input type='submit' value='Actualizar'>";
     html += "</form>";
     html += "<script>";
     html += "function updateData() {";
@@ -64,6 +52,9 @@ void setup()
     html += "document.getElementById('totalTime').innerHTML = 'Tiempo Total: ' + data.totalTime + ' segundos';";
     html += "document.getElementById('remainingTime').innerHTML = 'Tiempo Restante: ' + data.remainingTime + ' segundos';";
     html += "document.getElementById('temperature').innerHTML = 'Temperatura: ' + data.temperature + ' °C';";
+    html += "document.getElementById('motor').innerHTML = 'Tiempo Total: ' + data.motor;";
+    html += "document.getElementById('flautas').innerHTML = 'Tiempo Total: ' + data.flautas;";
+    html += "document.getElementById('system').innerHTML = 'Tiempo Total: ' + data.system;";
     html += "}";
     html += "};";
     html += "xhr.open('GET', '/data', true);";
@@ -78,7 +69,11 @@ void setup()
             {
     String jsonResponse = "{\"totalTime\":" + String(tiempoTotal) +
                           ", \"remainingTime\":" + String(tiempoRestante) +
-                          ", \"temperature\":" + String(tempC) + "}";
+                          ", \"temperature\":" + String(tempC) + 
+                          ",\"motor\":" + String(motor) +
+                          ",\"flautas\":" + String(flauta) +
+                          ",\"system\":" + String(sistema) +
+                          "}";
     server.send(200, "application/json", jsonResponse); });
 
   server.on("/setTiempo", HTTP_POST, []()
@@ -86,6 +81,12 @@ void setup()
     String nuevoTiempo = server.arg("tiempo");
     tiempoTotal = nuevoTiempo.toInt();
     tiempoRestante = tiempoTotal;
+    String newtemperaturaMaxima = server.arg("tempmax");
+    tiempoTotal = nuevoTiempo.toInt();
+    String newtemperaturaMinima = server.arg("tempmin");
+    tiempoTotal = nuevoTiempo.toInt();
+    temperaturaMaxima = newtemperaturaMaxima.toInt();
+    temperaturaMinima = newtemperaturaMinima.toInt();
     server.sendHeader("Location", "/");
     server.send(302, "text/plain", "Redirecting"); });
 
@@ -99,30 +100,17 @@ void loop()
   if (digitalRead(2) == HIGH && tiempoRestante > 0)
   {
     Serial.println("SYSTEMS ON");
+    sistema = "on";
     digitalWrite(15, HIGH);
     Serial.println("Encendiendo motor");
+    motor = "on";
     fire();
     Serial.println("Encendiendo Gas");
     getTemp();
     Serial.println("Temperatura:");
-    /*oled.clearDisplay();
-    oled.setTextColor(WHITE);
-    oled.setCursor(0, 0);
-    oled.setTextSize(1);
-    oled.print('Temperatura: ');
-    oled.setCursor(36, 0);
-    oled.setTextSize(1);
-    oled.print(tempC);*/
     Serial.println(tempC);
     Serial.println("Tiempo ");
     Serial.println(tiempoRestante);
-    /*oled.setCursor(0, 30);
-    oled.setTextSize(1);
-    oled.print('Tiempo restante: ');
-    oled.setCursor(42, 30);
-    oled.setTextSize(1);
-    oled.print(tiempoRestante);
-    oled.display();*/
     ThingSpeak.setField(3, tiempoRestante);
     ThingSpeak.writeFields(channelID, writeAPIKey);
     tiempoRestante--;
@@ -130,9 +118,11 @@ void loop()
   else
   {
     Serial.println("SYSTEM OFF");
-    if (digitalRead(15) == HIGH)
+    sistema = "off";
+    if (digitalRead(15) == HIGH || tiempoRestante == 0)
     {
       Serial.println("Apagando motor");
+      motor = "off";
       digitalWrite(15, LOW);
       alarm();
     }
