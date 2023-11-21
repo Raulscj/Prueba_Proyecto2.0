@@ -30,14 +30,32 @@ void setup()
 
   server.on("/", HTTP_GET, []()
             {
-    String html = "<html><body>";
+    String html = "<html><head>";
+    html += "<title>Tostadora de Maíz</title>";
+    html += "<style>";
+    html += "body {";
+    html += "    background-color: gray;"; 
+    html += "    text-align: center;"; 
+    html += "}";
+    html += "h1 {";
+    html += "    color: #FFD700;"; 
+    html += "}";
+    html += "p {";
+    html += "    color: #FFD700;"; 
+    html += "    font-size: 18px;";
+    html += "}";
+    html += ".red-text {";
+    html += "    color: red;"; 
+    html += "}";
+    html += "</style>";
+    html += "</head><body>";
     html += "<h1>Tostadora de Maíz</h1>";
-    html += "<p id='totalTime'>Tiempo Total: </p>";
-    html += "<p id='remainingTime'>Tiempo Restante: </p>";
-    html += "<p id='temperature'>Temperatura: </p>";
-    html += "<p id='motor'>Estado del motor: </p>";
-    html += "<p id='flautas'>Estado de las flautas: </p>";
-    html += "<p id='system'>Estado del sistema: </p>";
+    html += "<p id='totalTime' class='red-text'>Tiempo Total: </p>";
+    html += "<p id='remainingTime' class='red-text'>Tiempo Restante: </p>";
+    html += "<p id='temperature' class='red-text'>Temperatura: </p>";
+    html += "<p id='motor' class='red-text'>Estado del motor: </p>";
+    html += "<p id='flautas' class='red-text'>Estado de las flautas: </p>";
+    html += "<p id='system' class='red-text'>Estado del sistema: </p>";
     html += "<form id='timeForm' action='/setTiempo' method='post'>";
     html += "Nuevo Tiempo: <input type='text' name='tiempo'><input type='submit' value='Actualizar'>";
     html += "Temperatura maxima: <input type='number' name='tempmax'><input type='submit' value='Actualizar'>";
@@ -82,10 +100,9 @@ void setup()
     tiempoTotal = nuevoTiempo.toInt();
     tiempoRestante = tiempoTotal;
     String newtemperaturaMaxima = server.arg("tempmax");
-    tiempoTotal = nuevoTiempo.toInt();
+    temperaturaMaxima = newtemperaturaMaxima.toInt();
     String newtemperaturaMinima = server.arg("tempmin");
     tiempoTotal = nuevoTiempo.toInt();
-    temperaturaMaxima = newtemperaturaMaxima.toInt();
     temperaturaMinima = newtemperaturaMinima.toInt();
     server.sendHeader("Location", "/");
     server.send(302, "text/plain", "Redirecting"); });
