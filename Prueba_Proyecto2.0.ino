@@ -13,8 +13,7 @@ void setup()
   pinMode(4, OUTPUT);       // Bombillo
   pinMode(15, OUTPUT);      // Motor
   pinMode(13, INPUT);       // Sensor de llama
-  pinMode(18, OUTPUT);      // Trigger
-  pinMode(19, INPUT);       // ECO
+  // pinMode(20, INPUT); // Sensor de MOVIMIENTO
 
   Serial.begin(115200);
   WiFi.begin(ssid, password);

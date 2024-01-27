@@ -24,7 +24,12 @@ void alarm()
 void fire()
 {
   // Cuando se apaga
-  if (tempC > temperaturaMaxima || digitalRead(13) == LOW || !act)
+  if (tempC > temperaturaMaxima)
+  {
+    Serial.println("Temperatura excedida");
+    flauta = "off";
+  }
+  if (digitalRead(13) == LOW || !act)
   {
     Serial.println("Apagando flautas");
     digitalWrite(4, LOW);
@@ -42,22 +47,15 @@ void fire()
 }
 void move()
 {
-  digitalWrite(18, HIGH);
-  delay(1);
-  digitalWrite(18, LOW);
-  DURACION = pulseIn(19, HIGH);
-  DISTANCIA = DURACION / 18.7;
-  delay(500);
-  if (DISTANCIA <= 200 && DISTANCIA >= 20)
-  {
-    Serial.println("Objeto detectado");
-    act = true;
+  Serial.print("Lectura: ");
+  Serial.println(analogRead(movimiento)); //Imprime el valor de la lectura del canal A0
+  if ( analogRead(movimiento) > 900){
+  Serial.print("Se detiene el motor");
+  act = true;
     return;
-  }
-  else
-  {
-    Serial.println("Objeto no detectado");
+  }else{
+    Serial.print("Motor andando");
     act = false;
     return;
+    }
   }
-}
