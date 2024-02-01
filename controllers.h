@@ -45,7 +45,7 @@ void fire()
     digitalWrite(5, LOW);
   }
 }
-void move()
+void moving()
 {
   Serial.print("Lectura: ");
   Serial.println(analogRead(movimiento)); //Imprime el valor de la lectura del canal A0

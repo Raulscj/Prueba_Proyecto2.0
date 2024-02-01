@@ -112,6 +112,7 @@ void loop()
     digitalWrite(15, HIGH);
     Serial.println("Encendiendo motor");
     motor = "on";
+    moving();
     fire();
     Serial.println("Encendiendo Gas");
     getTemp();

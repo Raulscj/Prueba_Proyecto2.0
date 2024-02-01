@@ -1,5 +1,5 @@
 // Variables globales
-//int movimiento = A0;
+int movimiento = 34;
 int tiempoTotal = 0;
 int tiempoRestante = 0;
 float temperaturaMaxima = 25;
