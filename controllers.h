@@ -48,7 +48,7 @@ void fire()
 void moving()
 {
   Serial.print("Lectura: ");
-  Serial.println(analogRead(movimiento)); //Imprime el valor de la lectura del canal A0
+  Serial.println(analogRead(movimiento));
   if ( analogRead(movimiento) > 900){
   Serial.print("Se detiene el motor");
   act = true;

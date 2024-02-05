@@ -13,7 +13,6 @@ void setup()
   pinMode(4, OUTPUT);       // Bombillo
   pinMode(15, OUTPUT);      // Motor
   pinMode(13, INPUT);       // Sensor de llama
-  // pinMode(20, INPUT); // Sensor de MOVIMIENTO
 
   Serial.begin(115200);
   WiFi.begin(ssid, password);
@@ -107,6 +106,7 @@ void loop()
   server.handleClient();
   if (digitalRead(2) == HIGH && tiempoRestante > 0)
   {
+    //digitalWrite(5, LOW);
     Serial.println("SYSTEMS ON");
     sistema = "on";
     digitalWrite(15, HIGH);
