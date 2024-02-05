@@ -2,14 +2,8 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-
-/*-------------CONFIG--------------------*/
-const char*  WIFI_SSID      = "radscj";
-const char*  WIFI_Password  = "26962904";
-const String Relay_Password = "26962904";
-const int    Relay_PIN      = 0;
-/*-------------CONFIG--------------------*/
-
+#include "data.h"
+#include "upload.h"
 ESP8266WebServer server(80);
 
 String State = "OFF";
@@ -19,6 +13,7 @@ void setup(void) {
   digitalWrite(Relay_PIN, LOW);
   
   Serial.begin(115200);
+  WiFi.mode(WIFI_AP_STA);
   WiFi.begin(WIFI_SSID, WIFI_Password);
   Serial.println("");
 
@@ -37,15 +32,22 @@ void setup(void) {
   if (MDNS.begin("esp8266")) {
     Serial.println("MDNS responder started");
   }
-
+  //Vistas
   server.on("/", handleRoot);
-
+  server.on("/subir", HTTP_GET, PaginaSimple);
+  server.on("/actualizar", HTTP_POST, ActualizarPaso1, ActualizarPaso2);
   server.begin();
   Serial.println("HTTP server started");
+  MDNS.addService("http", "tcp", 80);
+    Serial.printf("Listo!\nAbre http://%s.local en navegador\n", ("esp8266"));
+    Serial.print("o en la IP: ");
+    Serial.println(WiFi.localIP());
 }
 
 void loop(void) {
   server.handleClient();
+  MDNS.update();
+  delay(2);
 }
 
 void handleRoot() {
