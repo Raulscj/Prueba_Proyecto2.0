@@ -1,57 +1,58 @@
 #include <ESP8266WiFi.h>
- 
-const char* ssid = "radscj"; // fill in here your router or wifi SSID
-const char* password = "26962904"; // fill in here your router or wifi password
- #define RELAY 0 // relay connected to  GPIO0
-WiFiServer server(80);
- 
-void setup() 
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <WiFiUdp.h>
+#include "data.h"
+#include "upload.h"
+
+ESP8266WebServer server(80);
+void setup()
 {
-  Serial.begin(115200); // must be same baudrate with the Serial Monitor
- 
-  pinMode(RELAY,OUTPUT);
+  Serial.begin(115200);
+  pinMode(RELAY, OUTPUT);
   digitalWrite(RELAY, LOW);
- 
   // Connect to WiFi network
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
- 
+  WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
- 
-  while (WiFi.status() != WL_CONNECTED) 
+  while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
     Serial.print(".");
   }
   Serial.println("");
   Serial.println("WiFi connected");
- 
-  // Start the server
-  server.begin();
-  Serial.println("Server started");
- 
-  // Print the IP address
-  Serial.print("Use this URL to connect: ");
-  Serial.print("https://");
-  Serial.print(WiFi.localIP());
-  Serial.println("/");
- 
+  if (WiFi.waitForConnectResult() == WL_CONNECTED)
+  {
+
+    // server.on("/subir", HTTP_GET, PaginaSimple);
+    server.on("/actualizar", HTTP_POST, ActualizarPaso1, ActualizarPaso2);
+    server.begin();
+
+    Serial.print("IP: ");
+    Serial.println(WiFi.localIP());
+  }
+  else
+  {
+    Serial.println("Error en Wifi");
+  }
 }
- 
-void loop() 
+void loop()
 {
+  server.handleClient();
+
   // Check if a client has connected
-  WiFiClient client = server.available();
-  if (!client) 
+  WiFiClient client = server.client();
+  if (!client)
   {
     return;
   }
- 
   // Wait until the client sends some data
   Serial.println("new client");
-  while(!client.available())
+  while (!client.available())
   {
     delay(1);
   }
@@ -60,23 +61,22 @@ void loop()
   String request = client.readStringUntil('\r');
   Serial.println(request);
   client.flush();
- 
   // Match the request
   int value = LOW;
-  if (request.indexOf("/RELAY=ON") != -1)  
+  if (request.indexOf("/RELAY=ON") != -1)
   {
     Serial.println("RELAY=ON");
-    digitalWrite(RELAY,LOW);
+    digitalWrite(RELAY, LOW);
     value = LOW;
   }
-  if (request.indexOf("/RELAY=OFF") != -1)  
+  if (request.indexOf("/RELAY=OFF") != -1)
   {
     Serial.println("RELAY=OFF");
-    digitalWrite(RELAY,HIGH);
+    digitalWrite(RELAY, HIGH);
     value = HIGH;
   }
-  
-  //Display the HTML web page
+
+  // Display the HTML web page
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
   client.println(""); //  this is a must
@@ -93,12 +93,12 @@ void loop()
   client.println("<body>");
   client.println("<h1 align = center>ESP01 RELAY CONTROL</h1>");
   client.print("<h2 align = center>RELAY STATUS: ");
- 
-  if(value == HIGH) 
+
+  if (value == HIGH)
   {
     client.print("OFF");
-  } 
-  else 
+  }
+  else
   {
     client.print("ON");
   }
@@ -106,9 +106,11 @@ void loop()
   client.println("<br>");
   client.println("<a href=\"/RELAY=ON\"><button class=\"button\">TURN ON</button></a>");
   client.println("<a href=\"/RELAY=OFF\"><button class=\"button button2\">TURN OFF</button></a><br>");
+  client.println("<h2> Update </h2>");
+  client.println("<form method='POST' action='/actualizar' enctype='multipart/form-data'><input type='file' name='update' class=\"button\"><br><input type='submit' value='actualizar' class=\"button button2\"></form>");
   client.println("</body>");
   client.println("</html>");
- 
+
   delay(1);
   Serial.println("Client disonnected");
   Serial.println("");
