@@ -18,6 +18,7 @@ void setup()
   Serial.println(ssid);
   WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
+   WiFi.config(ip, gateway, subnet);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
@@ -106,7 +107,7 @@ void loop()
   client.println("<br>");
   client.println("<a href=\"/RELAY=ON\"><button class=\"button\">TURN ON</button></a>");
   client.println("<a href=\"/RELAY=OFF\"><button class=\"button button2\">TURN OFF</button></a><br>");
-  client.println("<h2> Update </h2>");
+  client.println("<h2> UPDATE </h2>");
   client.println("<form method='POST' action='/actualizar' enctype='multipart/form-data'><input type='file' name='update' class=\"button\"><br><input type='submit' value='actualizar' class=\"button button2\"></form>");
   client.println("</body>");
   client.println("</html>");

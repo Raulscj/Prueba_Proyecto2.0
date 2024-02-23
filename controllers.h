@@ -1,3 +1,4 @@
+
 void getTemp()
 {
   tempC = thermocouple.readCelsius();
@@ -59,3 +60,18 @@ void moving()
     return;
     }
   }
+void controlarBombillo(String url) {
+    HTTPClient http;
+    http.begin(url);
+    int httpCode = http.GET();
+    if (httpCode > 0) {
+        Serial.printf("[HTTP] GET... código: %d\n", httpCode);
+        if (httpCode == HTTP_CODE_OK) {
+            String payload = http.getString();
+            Serial.println(payload);
+        }
+    } else {
+        Serial.printf("[HTTP] GET... falló, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+    http.end();
+}

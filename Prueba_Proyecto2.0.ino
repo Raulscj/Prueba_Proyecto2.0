@@ -1,4 +1,5 @@
 #include <WiFi.h>
+#include <HTTPClient.h>
 #include <ThingSpeak.h>
 #include <max6675.h>
 #include <WebServer.h>
@@ -24,6 +25,13 @@ void setup()
   Serial.println("Conexión exitosa");
   ThingSpeak.begin(client);
   Serial.println(WiFi.localIP());
+  // Configurar el ESP32 como punto de acceso WiFi con dirección IP estática
+  Serial.println("Configurando punto de acceso WiFi...");
+  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0)); // Configurar la dirección IP estática
+  WiFi.softAP(apSSID, apPassword);
+  Serial.println("Punto de acceso creado!");
+  Serial.print("Dirección IP del AP: ");
+  Serial.println(WiFi.softAPIP());
   delay(1000);
 
   server.on("/", HTTP_GET, []()
@@ -106,8 +114,9 @@ void loop()
   server.handleClient();
   if (digitalRead(2) == HIGH && tiempoRestante > 0)
   {
-    //digitalWrite(5, LOW);
+    // digitalWrite(5, LOW);
     Serial.println("SYSTEMS ON");
+    controlarBombillo("http://192.168.200.53/RELAY=ON");
     sistema = "on";
     digitalWrite(15, HIGH);
     Serial.println("Encendiendo motor");
@@ -123,6 +132,7 @@ void loop()
     ThingSpeak.setField(3, tiempoRestante);
     ThingSpeak.writeFields(channelID, writeAPIKey);
     tiempoRestante--;
+    controlarBombillo("http://192.168.200.53//RELAY=OFF");
   }
   else
   {
