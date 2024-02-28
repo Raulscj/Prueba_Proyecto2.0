@@ -1,11 +1,5 @@
 extern ESP8266WebServer server;
 
-void PaginaSimple()
-{
-  server.sendHeader("Connection", "close");
-  server.send(200, "text/html", Pagina);
-}
-
 void ActualizarPaso1()
 {
   server.sendHeader("Connection", "close");

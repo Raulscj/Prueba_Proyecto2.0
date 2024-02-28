@@ -116,7 +116,7 @@ void loop()
   {
     // digitalWrite(5, LOW);
     Serial.println("SYSTEMS ON");
-    controlarBombillo("http://192.168.200.53/RELAY=ON");
+    controlarBombillo("http://192.168.200.53/RELAY=ON",5000);
     sistema = "on";
     digitalWrite(15, HIGH);
     Serial.println("Encendiendo motor");
@@ -132,12 +132,16 @@ void loop()
     ThingSpeak.setField(3, tiempoRestante);
     ThingSpeak.writeFields(channelID, writeAPIKey);
     tiempoRestante--;
-    controlarBombillo("http://192.168.200.53//RELAY=OFF");
+    delay(1500);
+    controlarBombillo("http://192.168.200.53//RELAY=OFF",5000);
   }
   else
   {
     Serial.println("SYSTEM OFF");
     sistema = "off";
+    client.println("<script>");
+    client.println("console.log('Systems off');");
+    client.println("</script>");
     if (digitalRead(15) == HIGH)
     {
       Serial.println("Apagando motor");

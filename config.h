@@ -11,4 +11,4 @@ IPAddress apIP(192, 168, 200, 1); // Dirección IP estática para el punto de ac
 
 // Objetos
 MAX6675 thermocouple(12, 14, 27);
-WebServer server(80);
+WebServer server(8080);

@@ -60,8 +60,9 @@ void moving()
     return;
     }
   }
-void controlarBombillo(String url) {
+void controlarBombillo(String url, int timeout) {
     HTTPClient http;
+    http.setTimeout(timeout); // Establecer el tiempo de espera para la solicitud HTTP
     http.begin(url);
     int httpCode = http.GET();
     if (httpCode > 0) {

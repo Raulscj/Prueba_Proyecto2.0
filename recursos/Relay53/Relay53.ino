@@ -5,7 +5,7 @@
 #include "data.h"
 #include "upload.h"
 
-ESP8266WebServer server(80);
+ESP8266WebServer server(8081);
 void setup()
 {
   Serial.begin(115200);
@@ -29,7 +29,19 @@ void setup()
   if (WiFi.waitForConnectResult() == WL_CONNECTED)
   {
 
-    // server.on("/subir", HTTP_GET, PaginaSimple);
+    // Definir rutas del servidor
+  server.on("/RELAY=ON", HTTP_GET, []() {
+    Serial.println("RELAY=ON");
+    digitalWrite(RELAY, LOW);
+    value = LOW;
+    server.send(200, "text/plain", "Relé encendido");
+  });
+  server.on("/RELAY=OFF", HTTP_GET, []() {
+    Serial.println("RELAY=OFF");
+    digitalWrite(RELAY, HIGH);
+    value = HIGH;
+    server.send(200, "text/plain", "Relé apagado");
+  });
     server.on("/actualizar", HTTP_POST, ActualizarPaso1, ActualizarPaso2);
     server.begin();
 
@@ -63,16 +75,22 @@ void loop()
   Serial.println(request);
   client.flush();
   // Match the request
-  int value = LOW;
+  
   if (request.indexOf("/RELAY=ON") != -1)
   {
     Serial.println("RELAY=ON");
+    client.println("<script>");
+    client.println("console.log('Relay ON');");
+    client.println("</script>");
     digitalWrite(RELAY, LOW);
     value = LOW;
   }
   if (request.indexOf("/RELAY=OFF") != -1)
   {
     Serial.println("RELAY=OFF");
+    client.println("<script>");
+    client.println("console.log('Relay OFF');");
+    client.println("</script>");
     digitalWrite(RELAY, HIGH);
     value = HIGH;
   }
@@ -90,7 +108,6 @@ void loop()
   client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
   client.println(".button2 {background-color: #77878A;}</style>");
   client.println("</head>");
-  client.println("<body>");
   client.println("<body>");
   client.println("<h1 align = center>ESP01 RELAY CONTROL</h1>");
   client.print("<h2 align = center>RELAY STATUS: ");
@@ -111,7 +128,9 @@ void loop()
   client.println("<form method='POST' action='/actualizar' enctype='multipart/form-data'><input type='file' name='update' class=\"button\"><br><input type='submit' value='actualizar' class=\"button button2\"></form>");
   client.println("</body>");
   client.println("</html>");
-
+  client.println("<script>");
+  client.println("console.log('Este es un mensaje desde el código JavaScript en la página HTML');");
+  client.println("</script>");
   delay(1);
   Serial.println("Client disonnected");
   Serial.println("");
