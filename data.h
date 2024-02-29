@@ -10,10 +10,9 @@ int DISTANCIA;
 bool act = false; //Variable para el sensor de movimiento
 char *motor = "off";
 char *flauta = "off";
-char *sistema = "off"
-String answer;;
+char *sistema = "off";
 const char *esp32Server = "http://192.168.200.1:8080";
-const char *RelayMotorOn = "http://192.168.200.1:8053/RELAY=ON";
-const char *RelayBombilloOn = "http://192.168.200.1:8070/RELAY=ON";
-const char *RelayMotorOff = "http://192.168.200.1:8053/RELAY=OFF";
-const char *RelayBombilloOff = "http://192.168.200.1:8070/RELAY=OFF";
+const char *RelayMotorOn = "http://192.168.200.53:8053/RELAY=ON";
+const char *RelayBombilloOn = "http://192.168.200.70:8070/RELAY=ON";
+const char *RelayMotorOff = "http://192.168.200.53:8053/RELAY=OFF";
+const char *RelayBombilloOff = "http://192.168.200.70:8070/RELAY=OFF";

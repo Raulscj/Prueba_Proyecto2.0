@@ -71,7 +71,7 @@ String getRequest(const char *serverName)
   if (httpResponseCode > 0)
   {
     Serial.print("Error code: ");
-    Serial.Println(httpResponseCode);
+    Serial.println(httpResponseCode);
   }
   http.end();
   return payload;

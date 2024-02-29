@@ -6,7 +6,7 @@
 #include "config.h"
 #include "data.h"
 #include "controllers.h"
-
+String answer;
 void setup()
 {
   pinMode(2, INPUT_PULLUP); // Pulsador
@@ -17,6 +17,7 @@ void setup()
 
   Serial.begin(115200);
   WiFi.begin(ssid, password);
+  WiFi.config(ip, gateway, subnet);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
@@ -25,13 +26,6 @@ void setup()
   Serial.println("Conexión exitosa");
   ThingSpeak.begin(client);
   Serial.println(WiFi.localIP());
-  // Configurar el ESP32 como punto de acceso WiFi con dirección IP estática
-  Serial.println("Configurando punto de acceso WiFi...");
-  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0)); // Configurar la dirección IP estática
-  WiFi.softAP(apSSID, apPassword);
-  Serial.println("Punto de acceso creado!");
-  Serial.print("Dirección IP del AP: ");
-  Serial.println(WiFi.softAPIP());
   delay(1000);
 
   server.on("/", HTTP_GET, []()
@@ -138,7 +132,8 @@ void loop()
     ThingSpeak.writeFields(channelID, writeAPIKey);
     tiempoRestante--;
     delay(1500);
-    controlarBombillo("http://192.168.200.53//RELAY=OFF", 5000);
+    answer = getRequest(RelayMotorOff);
+  answer = getRequest(RelayBombilloOff);
   }
   else
   {
@@ -155,7 +150,6 @@ void loop()
       alarm();
     }
   }
-  answer = getRequest(RelayMotorOff);
-  answer = getRequest(RelayBombilloOff);
+  
   delay(300);
 }
