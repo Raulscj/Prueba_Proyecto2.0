@@ -9,3 +9,4 @@ const int    Relay_PIN      = 0;
 int value = LOW;
 #define RELAY 0 
 WiFiUDP udp; // Crear una instancia de WiFiUDP
+ESP8266WebServer server(80);

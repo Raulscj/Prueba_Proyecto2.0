@@ -105,17 +105,21 @@ void setup()
 
 void loop()
 {
+  if(WiFi.status()==WL_CONNECTED){
+    answer = getRequest(esp32Server);
+    Serial.println(answer);
+    delay(requestInterval);
+    answer = getRequest(RelayMotorOn);
+    Serial.println(answer);
+    delay(requestInterval);
+    answer = getRequest(RelayBombilloOn);
+    Serial.println(answer);
+  }
   server.handleClient();
   if (digitalRead(2) == HIGH && tiempoRestante > 0)
   {
     // digitalWrite(5, LOW);
     Serial.println("SYSTEMS ON");
-    answer = getRequest(esp32Server);
-    Serial.println(answer);
-    answer = getRequest(RelayMotorOn);
-    Serial.println(answer);
-    answer = getRequest(RelayBombilloOn);
-    Serial.println(answer);
     sistema = "on";
     digitalWrite(15, HIGH);
     Serial.println("Encendiendo motor");
@@ -132,8 +136,12 @@ void loop()
     ThingSpeak.writeFields(channelID, writeAPIKey);
     tiempoRestante--;
     delay(1500);
-    answer = getRequest(RelayMotorOff);
+  delay(requestInterval);
+  answer = getRequest(RelayMotorOff);
+  Serial.println(answer);
+  delay(requestInterval);
   answer = getRequest(RelayBombilloOff);
+  Serial.println(answer);
   }
   else
   {

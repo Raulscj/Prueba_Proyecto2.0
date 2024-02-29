@@ -5,7 +5,7 @@
 #include "data.h"
 #include "upload.h"
 
-ESP8266WebServer server(8053);
+
 void setup()
 {
   Serial.begin(115200);
