@@ -8,48 +8,66 @@ IPAddress apIP(192, 168, 200, 1);
 WebServer server(8080);
 void setup()
 {
-  Serial.begin(115200);
-  delay(50);
-  WiFi.softAP(apSSID, apPassword);
-  WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
-  Serial.print("Dirección IP del AP: ");
-  Serial.println(WiFi.softAPIP());
+	Serial.begin(115200);
+	delay(50);
+	WiFi.softAP(apSSID, apPassword);
+	WiFi.softAPConfig(apIP, apIP, IPAddress(255, 255, 255, 0));
+	Serial.print("Dirección IP del AP: ");
+	Serial.println(WiFi.softAPIP());
 
-  server.on("/", handleConnectionRoot);
-  server.on("/device2", handleD1);
-  server.on("/device1", handleD2);
-  server.on("/device3", handleD3);
-  server.onNotFound(handleNotFound);
+	server.on("/", handleConnectionRoot);
+	server.on("/device2", handleD1);
+	server.on("/device1", handleD2);
+	server.on("/device3", handleD3);
+	server.onNotFound(handleNotFound);
 
-  server.begin();
-  Serial.println("Empezo lo good");
-  Serial.println("\nDispositivos contactados:")
+	server.begin();
+	Serial.println("Empezo lo good");
+	Serial.println("\nDispositivos contactados:")
 }
 
 void loop()
 {
-  server.handleClient();
+	server.handleClient();
 }
 String device = "";
 String answer = "";
 void setAnswer()
 {
-  answer = "<!DOCTYPE html>\
+	answer = "<!DOCTYPE html>\
             <html>\
             <body>\
             <hola \"" +
-               device + "\" !</h1>
-           < / body >
-           < / html > ";
+							 device + "\" !</h1>
+					 < / body >
+					 < / html > ";
 }
 void handleConnectionRoot()
 {
-  server.send(200, "text/html", "Hola desconocido!");
+	server.send(200, "text/html", "Hola desconocido!");
 }
 void handleD1()
 {
-  device = "ESP32-01";
-  Serial.println(device);
-  setAnswer();
-  server.send(200, "text/html", answer);
+	device = "ESP32-01";
+	Serial.println(device);
+	setAnswer();
+	server.send(200, "text/html", answer);
+}
+void handleD2()
+{
+	device = "ESP32-02";
+	Serial.println(device);
+	setAnswer();
+	server.send(200, "text/html", answer);
+}
+void handleD3()
+{
+	device = "ESP32-03";
+	Serial.println(device);
+	setAnswer();
+	server.send(200, "text/html", answer);
+}
+void handleNotFound()
+{
+	server.send(404, "text/plain", "Not Found");
 }
