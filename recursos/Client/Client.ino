@@ -25,5 +25,47 @@ void setup()
 
   // nos conectamos a la red
   WiFi.begin(ssid, password);
-  Serial.println("Conectando...");
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.println("Conectando...");
+  }
+  Serial.println("Conexión exitosa");
+  Serial.println(WiFi.localIP());
+}
+void loop()
+{
+  if (digitalRead(btn) == HIGH && !isLedOn)
+  {
+    digitalWrite(btn, HIGH);
+    isLedOn = true;
+    Serial.println("\nLed encendido!");
+    answer = getRequest(esp32Server);
+    Serial.println("Respuesta del ESP32 servidor: ");
+    Serial.println(answer);
+    delay(250);
+  }
+  else if (digitalRead(btn) == LOW && isLedOn)
+  {
+    digitalWrite(btn, LOW);
+    isLedOn = false;
+    Serial.println("\nLed apagado");
+    delay(25);
+  }
+}
+String getRequest(const char *serverName)
+{
+  HTTPClient http;
+  http.begin(serverName);
+  int httpResponseCode = http.GET();
+
+  String payload = "...";
+
+  if (httpResponseCode > 0)
+  {
+    Serial.print("Error code: ");
+    Serial.Println(httpResponseCode);
+  }
+  http.end();
+  return payload;
 }

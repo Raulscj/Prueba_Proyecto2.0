@@ -116,7 +116,12 @@ void loop()
   {
     // digitalWrite(5, LOW);
     Serial.println("SYSTEMS ON");
-    controlarBombillo("http://192.168.200.53/RELAY=ON", 5000);
+    answer = getRequest(esp32Server);
+    Serial.println(answer);
+    answer = getRequest(RelayMotorOn);
+    Serial.println(answer);
+    answer = getRequest(RelayBombilloOn);
+    Serial.println(answer);
     sistema = "on";
     digitalWrite(15, HIGH);
     Serial.println("Encendiendo motor");
@@ -150,5 +155,7 @@ void loop()
       alarm();
     }
   }
+  answer = getRequest(RelayMotorOff);
+  answer = getRequest(RelayBombilloOff);
   delay(300);
 }

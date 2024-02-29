@@ -1,5 +1,5 @@
 // SERVIDOR PRINCIPAL
-#include <Wifi.h>
+#include <WiFi.h>
 #include <WebServer.h>
 
 const char *apSSID = "ESP32-AP";
@@ -16,14 +16,14 @@ void setup()
 	Serial.println(WiFi.softAPIP());
 
 	server.on("/", handleConnectionRoot);
-	server.on("/device2", handleD1);
-	server.on("/device1", handleD2);
-	server.on("/device3", handleD3);
+	/*server.on("/home", handleD1); //Principal
+	server.on("/motor", handleD2); //Relay 53
+	server.on("/flauta", handleD3); //Relay 70*/
 	server.onNotFound(handleNotFound);
 
 	server.begin();
 	Serial.println("Empezo lo good");
-	Serial.println("\nDispositivos contactados:")
+	Serial.println("\nDispositivos contactados:");
 }
 
 void loop()
@@ -37,35 +37,14 @@ void setAnswer()
 	answer = "<!DOCTYPE html>\
             <html>\
             <body>\
-            <hola \"" +
-							 device + "\" !</h1>
-					 < / body >
-					 < / html > ";
+            <h1> Hola \"" +
+							device + "\" !</h1>\
+					</body> \
+					</html> ";
 }
 void handleConnectionRoot()
 {
 	server.send(200, "text/html", "Hola desconocido!");
-}
-void handleD1()
-{
-	device = "ESP32-01";
-	Serial.println(device);
-	setAnswer();
-	server.send(200, "text/html", answer);
-}
-void handleD2()
-{
-	device = "ESP32-02";
-	Serial.println(device);
-	setAnswer();
-	server.send(200, "text/html", answer);
-}
-void handleD3()
-{
-	device = "ESP32-03";
-	Serial.println(device);
-	setAnswer();
-	server.send(200, "text/html", answer);
 }
 void handleNotFound()
 {

@@ -60,19 +60,19 @@ void moving()
     return;
     }
   }
-void controlarBombillo(String url, int timeout) {
-    HTTPClient http;
-    http.setTimeout(timeout); // Establecer el tiempo de espera para la solicitud HTTP
-    http.begin(url);
-    int httpCode = http.GET();
-    if (httpCode > 0) {
-        Serial.printf("[HTTP] GET... código: %d\n", httpCode);
-        if (httpCode == HTTP_CODE_OK) {
-            String payload = http.getString();
-            Serial.println(payload);
-        }
-    } else {
-        Serial.printf("[HTTP] GET... falló, error: %s\n", http.errorToString(httpCode).c_str());
-    }
-    http.end();
+String getRequest(const char *serverName)
+{
+  HTTPClient http;
+  http.begin(serverName);
+  int httpResponseCode = http.GET();
+
+  String payload = "...";
+
+  if (httpResponseCode > 0)
+  {
+    Serial.print("Error code: ");
+    Serial.Println(httpResponseCode);
+  }
+  http.end();
+  return payload;
 }

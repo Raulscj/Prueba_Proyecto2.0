@@ -5,7 +5,7 @@
 #include "data.h"
 #include "upload.h"
 
-ESP8266WebServer server(8081);
+ESP8266WebServer server(8053);
 void setup()
 {
   Serial.begin(115200);
@@ -16,9 +16,8 @@ void setup()
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
-  WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
-   WiFi.config(ip, gateway, subnet);
+  WiFi.config(ip, gateway, subnet);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
@@ -26,37 +25,18 @@ void setup()
   }
   Serial.println("");
   Serial.println("WiFi connected");
-  if (WiFi.waitForConnectResult() == WL_CONNECTED)
-  {
-
-    // Definir rutas del servidor
-  server.on("/RELAY=ON", HTTP_GET, []() {
-    Serial.println("RELAY=ON");
-    digitalWrite(RELAY, LOW);
-    value = LOW;
-    server.send(200, "text/plain", "Relé encendido");
-  });
-  server.on("/RELAY=OFF", HTTP_GET, []() {
-    Serial.println("RELAY=OFF");
-    digitalWrite(RELAY, HIGH);
-    value = HIGH;
-    server.send(200, "text/plain", "Relé apagado");
-  });
-    server.on("/actualizar", HTTP_POST, ActualizarPaso1, ActualizarPaso2);
-    server.begin();
-
-    Serial.print("IP: ");
-    Serial.println(WiFi.localIP());
-  }
-  else
-  {
-    Serial.println("Error en Wifi");
-  }
+  // Definir rutas del servidor
+  server.on("/RELAY=ON", handleRelayOn);
+  server.on("/RELAY=OFF", handleRelayOff);
+  server.onNotFound(handleNotFound);
+  server.on("/actualizar", HTTP_POST, ActualizarPaso1, ActualizarPaso2);
+  server.begin();
+  Serial.print("IP: ");
+  Serial.println(WiFi.localIP());
 }
 void loop()
 {
   server.handleClient();
-
   // Check if a client has connected
   WiFiClient client = server.client();
   if (!client)
@@ -69,7 +49,6 @@ void loop()
   {
     delay(1);
   }
-
   // Read the first line of the request
   String request = client.readStringUntil('\r');
   Serial.println(request);
@@ -98,7 +77,7 @@ void loop()
   // Display the HTML web page
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: text/html");
-  client.println(""); //  this is a must
+  client.println(""); 
   client.println("<!DOCTYPE HTML>");
   client.println("<html>");
   client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
@@ -111,7 +90,6 @@ void loop()
   client.println("<body>");
   client.println("<h1 align = center>ESP01 RELAY CONTROL</h1>");
   client.print("<h2 align = center>RELAY STATUS: ");
-
   if (value == HIGH)
   {
     client.print("OFF");
@@ -134,4 +112,37 @@ void loop()
   delay(1);
   Serial.println("Client disonnected");
   Serial.println("");
+}
+
+String device = "";
+String answer = "";
+void setAnswer()
+{
+	answer = "<!DOCTYPE html>\
+            <html>\
+            <body>\
+            <h1> Relay \"" +
+					  device + "\" !</h1>\
+					  </body>\
+					  </html> ";
+}
+void handleRelayOn(){
+  device = "Encendido";
+  Serial.println("RELAY=ON");
+  digitalWrite(RELAY, LOW);
+  value = LOW;
+  setAnswer();
+  server.send(200, "text/html", answer);
+}
+void handleRelayOff(){
+  device = "Apagado";
+  Serial.println("RELAY=OFF");
+  digitalWrite(RELAY, HIGH);
+  value = HIGH;
+  setAnswer();
+  server.send(200, "text/html", answer);
+}
+void handleNotFound()
+{
+	server.send(404, "text/plain", "Not Found");
 }
