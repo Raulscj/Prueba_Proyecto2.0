@@ -1,12 +1,13 @@
-//SERVIDOR PRINCIPAL
+// SERVIDOR PRINCIPAL
 #include <Wifi.h>
 #include <WebServer.h>
 
-const char* apSSID = "ESP32-AP";
-const char* apPassword = "25041999";
-IPAddress apIP(192, 168, 200, 1); 
+const char *apSSID = "ESP32-AP";
+const char *apPassword = "25041999";
+IPAddress apIP(192, 168, 200, 1);
 WebServer server(8080);
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   delay(50);
   WiFi.softAP(apSSID, apPassword);
@@ -25,20 +26,30 @@ void setup() {
   Serial.println("\nDispositivos contactados:")
 }
 
-void loop() {
+void loop()
+{
   server.handleClient();
 }
 String device = "";
 String answer = "";
-void setAnswer(){
+void setAnswer()
+{
   answer = "<!DOCTYPE html>\
             <html>\
             <body>\
-            <hola \"" + device + "\" !</h1>
-            </body>\
-            </html>";
+            <hola \"" +
+               device + "\" !</h1>
+           < / body >
+           < / html > ";
 }
-void handleConnectionRoot(){
+void handleConnectionRoot()
+{
   server.send(200, "text/html", "Hola desconocido!");
 }
-
+void handleD1()
+{
+  device = "ESP32-01";
+  Serial.println(device);
+  setAnswer();
+  server.send(200, "text/html", answer);
+}
