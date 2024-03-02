@@ -1,4 +1,26 @@
 
+String getRequest(const char* serverName)
+{
+  HTTPClient http;
+  http.begin(serverName);
+
+  int httpResponseCode = http.GET();
+
+  String payload = "...";
+
+  if (httpResponseCode > 0)
+  {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    payload = http.getString();
+  }
+  else{
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  http.end();
+  return payload;
+}
 void getTemp()
 {
   tempC = thermocouple.readCelsius();
@@ -28,12 +50,18 @@ void fire()
   if (tempC > temperaturaMaxima)
   {
     Serial.println("Temperatura excedida");
+    delay(requestInterval);
+    answer = getRequest(RelayBombilloOff);
+    Serial.println(answer);
     flauta = "off";
+    alarm();
   }
   if (digitalRead(13) == LOW || !act)
   {
     Serial.println("Apagando flautas");
-    digitalWrite(4, LOW);
+    delay(requestInterval);
+    answer = getRequest(RelayBombilloOff);
+    Serial.println(answer);
     flauta = "off";
     alarm();
   }
@@ -41,7 +69,9 @@ void fire()
   if (tempC < temperaturaMinima)
   {
     Serial.println("Encendiendo flautas");
-    digitalWrite(4, HIGH);
+    delay(requestInterval);
+    answer = getRequest(RelayBombilloOn);
+    Serial.println(answer);
     flauta = "on";
     digitalWrite(5, LOW);
   }
@@ -51,7 +81,7 @@ void moving()
   Serial.print("Lectura: ");
   Serial.println(analogRead(movimiento));
   if ( analogRead(movimiento) > 900){
-  Serial.print("Se detiene el motor");
+  Serial.print("Se detuvo el motor");
   act = true;
     return;
   }else{
@@ -60,25 +90,4 @@ void moving()
     return;
     }
   }
-String getRequest(const char* serverName)
-{
-  HTTPClient http;
-  http.begin(serverName);
 
-  int httpResponseCode = http.GET();
-
-  String payload = "...";
-
-  if (httpResponseCode > 0)
-  {
-    Serial.print("HTTP Response code: ");
-    Serial.println(httpResponseCode);
-    payload = http.getString();
-  }
-  else{
-    Serial.print("Error code: ");
-    Serial.println(httpResponseCode);
-  }
-  http.end();
-  return payload;
-}

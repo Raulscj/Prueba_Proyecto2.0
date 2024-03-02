@@ -6,13 +6,13 @@
 #include "config.h"
 #include "data.h"
 #include "controllers.h"
-String answer;
+
 void setup()
 {
   pinMode(2, INPUT_PULLUP); // Pulsador
   pinMode(5, OUTPUT);       // Buzzer
-  pinMode(4, OUTPUT);       // Bombillo
-  pinMode(15, OUTPUT);      // Motor
+  //pinMode(4, OUTPUT);       // Bombillo
+  //pinMode(15, OUTPUT);      // Motor
   pinMode(13, INPUT);       // Sensor de llama
 
   Serial.begin(115200);
@@ -105,23 +105,15 @@ void setup()
 
 void loop()
 {
-  if(WiFi.status()==WL_CONNECTED){
-    answer = getRequest(esp32Server);
-    Serial.println(answer);
-    delay(requestInterval);
-    answer = getRequest(RelayMotorOn);
-    Serial.println(answer);
-    delay(requestInterval);
-    answer = getRequest(RelayBombilloOn);
-    Serial.println(answer);
-  }
   server.handleClient();
   if (digitalRead(2) == HIGH && tiempoRestante > 0)
   {
     // digitalWrite(5, LOW);
     Serial.println("SYSTEMS ON");
     sistema = "on";
-    digitalWrite(15, HIGH);
+    delay(requestInterval);
+    answer = getRequest(RelayMotorOn);
+    Serial.println(answer);
     Serial.println("Encendiendo motor");
     motor = "on";
     moving();
@@ -135,13 +127,7 @@ void loop()
     ThingSpeak.setField(3, tiempoRestante);
     ThingSpeak.writeFields(channelID, writeAPIKey);
     tiempoRestante--;
-    delay(1500);
-  delay(requestInterval);
-  answer = getRequest(RelayMotorOff);
-  Serial.println(answer);
-  delay(requestInterval);
-  answer = getRequest(RelayBombilloOff);
-  Serial.println(answer);
+    delay(1000);
   }
   else
   {
@@ -150,14 +136,15 @@ void loop()
     client.println("<script>");
     client.println("console.log('Systems off');");
     client.println("</script>");
-    if (digitalRead(15) == HIGH)
+    if (act)
     {
       Serial.println("Apagando motor");
+      delay(requestInterval);
+      answer = getRequest(RelayMotorOff);
+      Serial.println(answer);
       motor = "off";
-      digitalWrite(15, LOW);
       alarm();
     }
   }
-  
   delay(300);
 }
