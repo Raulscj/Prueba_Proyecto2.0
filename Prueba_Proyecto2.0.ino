@@ -43,12 +43,12 @@ void setup()
     html += "<p id='motor'>Estado del motor: </p>";
     html += "<p id='flauta'>Estado de las flautas: </p>";
     html += "<p id='sistema'>Estado del sistema: </p>";
-    html += "<p id='tempMax'>Temperatura Máxima: </p>";
-    html += "<p id='tempMin'>Temperatura Mínima: </p>";
+    html += "<p id='tempMax'>Temperatura Maxima: </p>";
+    html += "<p id='tempMin'>Temperatura Minima: </p>";
     html += "<form id='timeForm' action='/setTiempo' method='post'>";
     html += "Nuevo Tiempo: <input type='text' name='tiempo'><input type='submit' value='Actualizar'>";
-    html += "Temperatura Máxima: <input type='number' name='tempMax'><input type='submit' value='Actualizar'>";
-    html += "Temperatura Mínima: <input type='number' name='tempMin'><input type='submit' value='Actualizar'>";
+    html += "Temperatura Maxima: <input type='number' name='tempMax'><input type='submit' value='Actualizar'>";
+    html += "Temperatura Minima: <input type='number' name='tempMin'><input type='submit' value='Actualizar'>";
     html += "</form>";
     html += "<script>";
     html += "function updateData() {";
